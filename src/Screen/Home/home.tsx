@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Animated, Keyboard } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 export default function HomeScreen() {
     const insets = useSafeAreaInsets();
     const localization = useLocalization();
+    const translateY = useRef(new Animated.Value(300)).current;
 
     const { setHistoryVisible, historyVisible, fadeAnim } = useHistory();
     const { mapRef,
@@ -29,6 +30,14 @@ export default function HomeScreen() {
         setDetailVisible,
         googlePlacesRef
     } = usePlaces()
+
+    useEffect(() => {
+        Animated.timing(translateY, {
+            toValue: detailVisible ? 0 : 300,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    }, [detailVisible]);
 
     const renderItem = ({ item, index }: { item: Place, index: number }) => (
         <TouchableOpacity onPress={() => {
@@ -139,8 +148,17 @@ export default function HomeScreen() {
                 </Animated.View>
             )}
 
-            {detailVisible && < LocationDetails location={location} />}
-
+            <Animated.View
+                style={{
+                    transform: [{ translateY }],
+                    opacity: translateY.interpolate({
+                        inputRange: [0, 300],
+                        outputRange: [1, 0],
+                    }),
+                }}
+            >
+                <LocationDetails location={location} />
+            </Animated.View>
         </View>
     );
 }
