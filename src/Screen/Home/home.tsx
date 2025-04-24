@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, Animated, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Animated, Keyboard } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import 'react-native-get-random-values';
@@ -12,6 +12,7 @@ import styles from './home.style';
 import { Place } from '@/Types/Place'
 import useHistory from '@/Hooks/useHistory'
 import LocationDetails from './Shared/LocationDetails';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen() {
     const insets = useSafeAreaInsets();
@@ -54,6 +55,15 @@ export default function HomeScreen() {
                     key: GOOGLE_MAPS_API_KEY,
                     language: 'en',
                 }}
+                renderRightButton={() => (
+                    googlePlacesRef.current?.getAddressText() ? (
+                        <TouchableOpacity
+                            style={styles.clearButton}
+                            onPress={() => { googlePlacesRef.current?.setAddressText('') }} >
+                            <Ionicons name={'close-circle-outline'} color={'black'} size={20} />
+                        </TouchableOpacity>
+                    ) : (<></>)
+                )}
                 styles={{
                     container: {
                         zIndex: 1,
@@ -83,7 +93,7 @@ export default function HomeScreen() {
                     autoCorrect: false,
                     autoCapitalize: 'none',
                     autoCompleteType: 'off',
-
+                    clearButtonMode: 'never',
                 }}
             />
 
@@ -98,9 +108,11 @@ export default function HomeScreen() {
                 }}
                 onTouchStart={() => {
                     setHistoryVisible(false)
+                    Keyboard.dismiss()
                 }}
                 onTouchMove={() => {
                     setDetailVisible(false)
+                    Keyboard.dismiss()
                 }}
             >
                 {location && (
@@ -119,6 +131,7 @@ export default function HomeScreen() {
                         { top: insets.top + sh(55), opacity: fadeAnim },
                     ]} >
                     <FlatList
+                        keyboardShouldPersistTaps="handled"
                         data={history}
                         keyExtractor={item => item.place_id}
                         renderItem={renderItem}

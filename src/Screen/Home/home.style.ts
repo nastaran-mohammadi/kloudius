@@ -38,7 +38,16 @@ const styles = StyleSheet.create({
     line: {
         height: 1,
         backgroundColor: Colors.grayCC,
-    }
+    },
+    container: {
+        position: 'relative',
+    },
+    clearButton: {
+        position: 'absolute',
+        right: 10,
+        top: 15,
+        zIndex: 1,
+    },
 });
 
 export default styles
