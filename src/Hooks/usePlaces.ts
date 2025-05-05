@@ -57,7 +57,7 @@ export const usePlaces = () => {
         }
     }, [history]);
 
-    const selectFromHistory = (item: Place) => {
+    const selectFromHistory = useCallback((item: Place) => {
         setLocation(item);
         setDetailVisible(true);
         if (googlePlacesRef.current) {
@@ -66,7 +66,7 @@ export const usePlaces = () => {
         }
 
         animateToRegion(item.coords);
-    };
+    }, []);
 
     // --------------------------- History Functions ---------------------------
 
@@ -79,7 +79,7 @@ export const usePlaces = () => {
         });
     }, []);
 
-    const createPlaceObject = (data: any, details: any): Place => {
+    const createPlaceObject = useCallback((data: any, details: any): Place => {
         const photoReference = details.photos?.[0]?.photo_reference;
         const loc = details.geometry?.location;
         const photo = `${GOOGLE_MAPS_IMAGE_BASE_URL}${photoReference}&key=${GOOGLE_MAPS_API_KEY}`;
@@ -91,7 +91,7 @@ export const usePlaces = () => {
             coords: { latitude: loc.lat, longitude: loc.lng },
             photo: photo,
         };
-    };
+    }, []);
 
     // --------------------------- Helper Functions ---------------------------
 
